@@ -13,18 +13,15 @@ import (
 
 func Example_clientStandalone() {
 	// This example shows using a customized http.Client.
-	u := &httpunix.Transport{
-		DialTimeout:           100 * time.Millisecond,
-		RequestTimeout:        1 * time.Second,
-		ResponseHeaderTimeout: 1 * time.Second,
-	}
-	u.RegisterLocation("myservice", "/path/to/socket")
-
 	var client = http.Client{
-		Transport: u,
+		Transport: &httpunix.Transport{
+			DialTimeout:           100 * time.Millisecond,
+			RequestTimeout:        1 * time.Second,
+			ResponseHeaderTimeout: 1 * time.Second,
+		},
 	}
 
-	resp, err := client.Get("http+unix://myservice/urlpath/as/seen/by/server")
+	resp, err := client.Get("http+unix://unix:/path/to/socket:/urlpath/as/seen/by/server")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -44,7 +41,6 @@ func Example_clientIntegrated() {
 		RequestTimeout:        1 * time.Second,
 		ResponseHeaderTimeout: 1 * time.Second,
 	}
-	u.RegisterLocation("myservice", "/path/to/socket")
 
 	// If you want to use http: with the same client:
 	t := &http.Transport{}
@@ -53,7 +49,7 @@ func Example_clientIntegrated() {
 		Transport: t,
 	}
 
-	resp, err := client.Get("http+unix://myservice/urlpath/as/seen/by/server")
+	resp, err := client.Get("http+unix://unix:/path/to/socket:/urlpath/as/seen/by/server")
 	if err != nil {
 		log.Fatal(err)
 	}
